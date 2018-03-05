@@ -1,8 +1,5 @@
 package com.spreadtrum.myapplication.help;
 
-import android.net.wifi.WifiConfiguration;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
 import android.os.RemoteException;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.uiautomator.By;
@@ -62,73 +59,25 @@ public class MyUntil {
     }
 
     public boolean wifiOn() throws UiObjectNotFoundException {
-        String build = getProp("ro.build.version.release");
-        entraps("am start com.android.settings");
-        if (build.contains("8.0")||build.contains("8.1.0")) {
-            UiScrollable scrollable = new UiScrollable(new UiSelector().resourceId("com.android.settings:id/dashboard_container"));
-            scrollable.scrollTextIntoView("网络和互联网");
-            UiObject2 net = device.findObject(By.text("网络和互联网"));
-            net.clickAndWait(Until.newWindow(), 1000);
-            UiObject2 switchs = device.wait(Until.findObject(By.res("com.android.settings:id/switchWidget")), 1000);
-            if (switchs.getText().equals("关闭")) {
-                switchs.clickAndWait(Until.newWindow(), 1000);
-                device.pressHome();
-                return true;
-            }
-        } else {
-            UiScrollable scrollable = new UiScrollable(new UiSelector().resourceId("com.android.settings:id/dashboard_container"));
-            scrollable.scrollTextIntoView("WLAN");
-            UiObject2 wifi = device.wait(Until.findObject(By.text("WLAN")), 1000);
-            String state = wifi.getParent().getChildren().get(1).getText();
-            if (!state.equals("已关闭")) {
-                device.pressHome();
-                return true;
-            } else {
-                wifi.clickAndWait(Until.newWindow(), 1000);
-                UiObject2 switch2 = device.wait(Until.findObject(By.res("com.android.settings:id/switch_widget")), 1000);
-                switch2.clickAndWait(Until.newWindow(), 1000);
-                device.pressHome();
-                return true;
-            }
+        try {
+            device.executeShellCommand("svc wifi enable");
+            device.executeShellCommand("svc data disable");
+            return true;
+        } catch (Exception e) {
+            return false;
         }
-        device.pressHome();
-        return true;
+
     }
 
 
     public boolean wifiOff() throws IOException, UiObjectNotFoundException {
-        String build = getProp("ro.build.version.release");
-        entraps("am start com.android.settings");
-        if (build.contains("8.0") || build.contains("8.1.0")) {
-            UiScrollable scrollable = new UiScrollable(new UiSelector().resourceId("com.android.settings:id/dashboard_container"));
-            scrollable.scrollTextIntoView("网络和互联网");
-            UiObject2 net = device.findObject(By.text("网络和互联网"));
-            net.clickAndWait(Until.newWindow(), 1000);
-            UiObject2 switchs = device.wait(Until.findObject(By.res("com.android.settings:id/switchWidget")), 1000);
-            if (switchs.getText().equals("开启")) {
-                switchs.clickAndWait(Until.newWindow(), 1000);
-                device.pressHome();
-                entraps("am force-stop com.android.settings");
-                return true;
-            }
-        } else {
-            UiScrollable scrollable = new UiScrollable(new UiSelector().resourceId("com.android.settings:id/dashboard_container"));
-            scrollable.scrollTextIntoView("WLAN");
-            UiObject2 wifi = device.wait(Until.findObject(By.text("WLAN")), 1000);
-            String state = wifi.getParent().getChildren().get(1).getText();
-            if (state.equals("已关闭")) {
-                device.pressHome();
-                return true;
-            } else {
-                wifi.clickAndWait(Until.newWindow(), 1000);
-                UiObject2 switch2 = device.wait(Until.findObject(By.res("com.android.settings:id/switch_widget")), 1000);
-                switch2.clickAndWait(Until.newWindow(), 1000);
-                device.pressHome();
-                return true;
-            }
+        try {
+            device.executeShellCommand("svc wifi disable");
+            device.executeShellCommand("svc data disable");
+            return true;
+        } catch (Exception e) {
+            return false;
         }
-        device.pressHome();
-        return true;
     }
 
     public void entraps(String command) {

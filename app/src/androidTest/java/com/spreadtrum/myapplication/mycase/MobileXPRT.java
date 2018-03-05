@@ -9,6 +9,7 @@ import android.support.test.uiautomator.UiObject2;
 import android.support.test.uiautomator.UiObjectNotFoundException;
 import android.support.test.uiautomator.UiScrollable;
 import android.support.test.uiautomator.UiSelector;
+import android.support.test.uiautomator.UiWatcher;
 import android.support.test.uiautomator.Until;
 
 import com.spreadtrum.myapplication.help.MyUntil;
@@ -56,6 +57,20 @@ public class MobileXPRT {
         myUntil.openScreen();
         myUntil.wifiOn();
         myUntil.entraps(appstart);
+
+        device.registerWatcher("batterDialog", new UiWatcher() {
+            @Override
+            public boolean checkForCondition() {
+                UiObject2 yes = device.wait(Until.findObject(By.text("确定")), 1000);
+                if (yes != null) {
+                    yes.clickAndWait(Until.newWindow(), 2000);
+                    return true;
+                }
+                return false;
+            }
+        });
+
+
         UiObject2 progress = device.wait(Until.findObject(By.text("正在从APK下载测试内容…")), 1000);
         if (progress != null && i-- > 0) {
             Thread.sleep(10000);

@@ -7,6 +7,7 @@ import android.support.test.uiautomator.By;
 import android.support.test.uiautomator.UiDevice;
 import android.support.test.uiautomator.UiObject2;
 import android.support.test.uiautomator.UiObjectNotFoundException;
+import android.support.test.uiautomator.UiWatcher;
 import android.support.test.uiautomator.Until;
 
 import com.spreadtrum.myapplication.help.MyUntil;
@@ -54,6 +55,19 @@ public class Linkpack {
         myUntil.openScreen();
         myUntil.wifiOff();
         myUntil.entraps(appstart);
+
+        device.registerWatcher("batterDialog", new UiWatcher() {
+            @Override
+            public boolean checkForCondition() {
+                UiObject2 yes = device.wait(Until.findObject(By.text("确定")), 1000);
+                if (yes != null) {
+                    yes.clickAndWait(Until.newWindow(), 2000);
+                    return true;
+                }
+                return false;
+            }
+        });
+
         UiObject2 single = device.wait(Until.findObject(By.text("Run Single Thread")), 1000);
         single.clickAndWait(Until.newWindow(), 1000);
         Thread.sleep(5000);

@@ -9,6 +9,7 @@ import android.support.test.uiautomator.UiObject2;
 import android.support.test.uiautomator.UiObjectNotFoundException;
 import android.support.test.uiautomator.UiScrollable;
 import android.support.test.uiautomator.UiSelector;
+import android.support.test.uiautomator.UiWatcher;
 import android.support.test.uiautomator.Until;
 import android.util.Log;
 
@@ -52,11 +53,22 @@ public class AndroBench {
     }
 
     @Test
-    public void test() throws RemoteException, InterruptedException, IOException, UiObjectNotFoundException {
+    public void test() throws Exception {
         myUntil.openScreen();
         myUntil.wifiOn();
         myUntil.entraps(appstart);
         Thread.sleep(2000);
+        device.registerWatcher("batterDialog", new UiWatcher() {
+            @Override
+            public boolean checkForCondition() {
+                UiObject2 yes = device.wait(Until.findObject(By.text("确定")), 1000);
+                if (yes != null) {
+                    yes.clickAndWait(Until.newWindow(), 2000);
+                    return true;
+                }
+                return false;
+            }
+        });
         /*UiObject2 run = device.wait(Until.findObject(By.res("com.andromeda.androbench2:id/btnStartingBenchmarking")), 1000);
         if (run != null) {
             int x = run.getVisibleBounds().centerX();

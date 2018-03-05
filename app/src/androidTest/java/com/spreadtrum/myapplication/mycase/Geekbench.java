@@ -9,6 +9,7 @@ import android.support.test.uiautomator.UiObject2;
 import android.support.test.uiautomator.UiObjectNotFoundException;
 import android.support.test.uiautomator.UiScrollable;
 import android.support.test.uiautomator.UiSelector;
+import android.support.test.uiautomator.UiWatcher;
 import android.support.test.uiautomator.Until;
 import android.util.Log;
 import android.widget.Toast;
@@ -60,6 +61,17 @@ public class Geekbench {
         myUntil.wifiOn();
         myUntil.entraps(appstart);
 
+        device.registerWatcher("batterDialog", new UiWatcher() {
+            @Override
+            public boolean checkForCondition() {
+                UiObject2 yes = device.wait(Until.findObject(By.text("确定")), 1000);
+                if (yes != null) {
+                    yes.clickAndWait(Until.newWindow(), 2000);
+                    return true;
+                }
+                return false;
+            }
+        });
        /* //test1
         UiObject2 back = device.wait(Until.findObject(By.descContains("转到上一层级")), 1000);
         back.clickAndWait(Until.newWindow(), 1000);

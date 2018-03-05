@@ -8,6 +8,7 @@ import android.support.test.uiautomator.UiObject;
 import android.support.test.uiautomator.UiObject2;
 import android.support.test.uiautomator.UiScrollable;
 import android.support.test.uiautomator.UiSelector;
+import android.support.test.uiautomator.UiWatcher;
 import android.support.test.uiautomator.Until;
 
 import com.spreadtrum.myapplication.help.MyUntil;
@@ -53,6 +54,18 @@ public class Antutu {
         myUntil.wifiOff();
         myUntil.entraps(appstart);
         Thread.sleep(5000);
+        device.registerWatcher("batterDialog", new UiWatcher() {
+            @Override
+            public boolean checkForCondition() {
+                UiObject2 yes = device.wait(Until.findObject(By.text("确定")), 1000);
+                if (yes != null) {
+                    yes.clickAndWait(Until.newWindow(), 2000);
+                    return true;
+                }
+                return false;
+            }
+        });
+
         try {
             UiObject2 start = device.wait(Until.findObject(By.res("com.antutu.ABenchMark:id/start_test_text")), 1000);
             start.clickAndWait(Until.newWindow(), 5000);

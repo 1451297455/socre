@@ -9,6 +9,7 @@ import android.support.test.uiautomator.UiObject2;
 import android.support.test.uiautomator.UiObjectNotFoundException;
 import android.support.test.uiautomator.UiScrollable;
 import android.support.test.uiautomator.UiSelector;
+import android.support.test.uiautomator.UiWatcher;
 import android.support.test.uiautomator.Until;
 import android.util.Log;
 
@@ -57,6 +58,19 @@ public class PCMark {
         myUntil.openScreen();
         myUntil.wifiOn();
         myUntil.entraps(appstart);
+
+        device.registerWatcher("batterDialog", new UiWatcher() {
+            @Override
+            public boolean checkForCondition() {
+                UiObject2 yes = device.wait(Until.findObject(By.text("确定")), 1000);
+                if (yes != null) {
+                    yes.clickAndWait(Until.newWindow(), 2000);
+                    return true;
+                }
+                return false;
+            }
+        });
+
         UiObject2 pcmark = device.wait(Until.findObject(By.res("com.futuremark.pcmark.android.benchmark:id/actionBarMenuItemText")), 1000);
         while (pcmark == null && i-- > 150) {
             Thread.sleep(2000);

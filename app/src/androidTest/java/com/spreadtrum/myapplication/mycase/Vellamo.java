@@ -9,6 +9,7 @@ import android.support.test.uiautomator.UiObject2;
 import android.support.test.uiautomator.UiObjectNotFoundException;
 import android.support.test.uiautomator.UiScrollable;
 import android.support.test.uiautomator.UiSelector;
+import android.support.test.uiautomator.UiWatcher;
 import android.support.test.uiautomator.Until;
 
 import com.spreadtrum.myapplication.help.MyUntil;
@@ -57,6 +58,19 @@ public class Vellamo {
         myUntil.openScreen();
         myUntil.wifiOn();
         myUntil.entraps(appstart);
+
+        device.registerWatcher("batterDialog", new UiWatcher() {
+            @Override
+            public boolean checkForCondition() {
+                UiObject2 yes = device.wait(Until.findObject(By.text("确定")), 1000);
+                if (yes != null) {
+                    yes.clickAndWait(Until.newWindow(), 2000);
+                    return true;
+                }
+                return false;
+            }
+        });
+
         UiObject2 accept = device.wait(Until.findObject(By.text("接受")), 1000);
         if (accept != null) {
             accept.clickAndWait(Until.newWindow(), 1000);

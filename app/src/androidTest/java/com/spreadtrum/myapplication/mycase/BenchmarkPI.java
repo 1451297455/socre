@@ -6,6 +6,7 @@ import android.support.test.runner.AndroidJUnit4;
 import android.support.test.uiautomator.By;
 import android.support.test.uiautomator.UiDevice;
 import android.support.test.uiautomator.UiObject2;
+import android.support.test.uiautomator.UiWatcher;
 import android.support.test.uiautomator.Until;
 
 import com.spreadtrum.myapplication.help.MyUntil;
@@ -54,6 +55,19 @@ public class BenchmarkPI {
         myUntil.openScreen();
         myUntil.wifiOff();
         myUntil.entraps(appstart);
+
+        device.registerWatcher("batterDialog", new UiWatcher() {
+            @Override
+            public boolean checkForCondition() {
+                UiObject2 yes = device.wait(Until.findObject(By.text("确定")), 1000);
+                if (yes != null) {
+                    yes.clickAndWait(Until.newWindow(), 2000);
+                    return true;
+                }
+                return false;
+            }
+        });
+
         UiObject2 run = device.wait(Until.findObject(By.res("gr.androiddev.BenchmarkPi:id/Button01")), 1000);
         run.clickAndWait(Until.newWindow(), 1000);
         UiObject2 message = device.wait(Until.findObject(By.res("android:id/message")), 1000);
