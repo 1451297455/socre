@@ -4,7 +4,6 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.uiautomator.By;
 import android.support.test.uiautomator.UiDevice;
-import android.support.test.uiautomator.UiObject;
 import android.support.test.uiautomator.UiObject2;
 import android.support.test.uiautomator.UiScrollable;
 import android.support.test.uiautomator.UiSelector;
@@ -14,14 +13,19 @@ import android.support.test.uiautomator.Until;
 import com.spreadtrum.myapplication.help.MyUntil;
 import com.spreadtrum.myapplication.help.item;
 
+import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Iterator;
 
-import static org.junit.Assert.assertTrue;
+import android.os.Environment;
 
 /**
  * Created by Jinchao_1.Zhang on 2017/9/14.
@@ -34,25 +38,27 @@ public class Antutu {
     private final String activity = "com.antutu.ABenchMark.ABenchMarkStart";
     private final String appstart = " am start -n " + packagename + "/" + activity;
     private final String appkill = "am force-stop " + packagename;
+    private final  String path = Environment.getExternalStorageDirectory().toString()+"/.antutu/last_result.json";
     private MyUntil myUntil = null;
     private UiDevice device = null;
     int i = 200;
     private final String classname = getClass().getSimpleName();
     private item myitem = null;
     private ArrayList<item> list = null;
+    private ArrayList<item> lowlist = null;
 
     @Before
     public void init() {
         device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         myUntil = new MyUntil();
         list = new ArrayList<>();
+        lowlist = new ArrayList<>();
     }
 
     @Test
     public void antutu() throws Exception {
         myUntil.openScreen();
         myUntil.wifiOff();
-        myUntil.entraps(appstart);
         Thread.sleep(5000);
         device.registerWatcher("batterDialog", new UiWatcher() {
             @Override
@@ -66,13 +72,8 @@ public class Antutu {
             }
         });
 
-        try {
-            UiObject2 start = device.wait(Until.findObject(By.res("com.antutu.ABenchMark:id/start_test_text")), 1000);
-            start.clickAndWait(Until.newWindow(), 5000);
-        } catch (Exception e) {
-            UiObject2 start = device.wait(Until.findObject(By.res("com.antutu.ABenchMark:id/tv_test_again")), 1000);
-            start.clickAndWait(Until.newWindow(), 5000);
-        }
+        device.executeShellCommand("am start -S -W -n com.antutu.ABenchMark/com.antutu.ABenchMark.ABenchMarkStart");
+        device.executeShellCommand("am start -S -W -n com.antutu.ABenchMark/com.antutu.ABenchMark.ABenchMarkStart -e 74Sd42l35nH e57b6eb9906e27062fc7fcfcc820b957a5c33b649");
         UiObject2 result = null;
         while (result == null && i-- > 1) {
             Thread.sleep(1000);
@@ -101,7 +102,28 @@ public class Antutu {
         getdata("CPU 常用算法", scrollable);
         getdata("CPU 多核性能", scrollable);
         getdata("RAM性能", scrollable);
+        getItemsocre(path,myitem);
+    }
 
+    private void getItemsocre(String path,item lowitem){
+        String result ="",line = "",key = "",value = "";
+        try {
+            FileInputStream Fis=new FileInputStream(path);
+            BufferedReader buf =new BufferedReader(new InputStreamReader(Fis));
+            while ((line=buf.readLine())!=null){
+                result+=line;
+            }
+            JSONObject jsonObject=new JSONObject(result);
+            Iterator iterator = jsonObject.keys();
+            while (iterator.hasNext()){
+                key = (String) iterator.next();
+                value = jsonObject.getString(key);
+                lowitem =new item(key,value);
+                lowlist.add(lowitem);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void getdata(String name, UiScrollable scrollable) throws Exception {
@@ -118,8 +140,9 @@ public class Antutu {
     @After
     public void end() throws Exception {
         myUntil.Writexml(list, classname);
+        myUntil.Writexml(lowlist, classname+"low");
         myUntil.entraps(appkill);
-
+        device.pressHome();
     }
 
 }

@@ -1,5 +1,6 @@
 package com.spreadtrum.myapplication.test;
 
+import android.os.Environment;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.uiautomator.By;
@@ -9,55 +10,84 @@ import android.support.test.uiautomator.UiObjectNotFoundException;
 import android.support.test.uiautomator.UiScrollable;
 import android.support.test.uiautomator.UiSelector;
 import android.support.test.uiautomator.Until;
+import android.util.Log;
 
 import com.spreadtrum.myapplication.help.MyUntil;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Iterator;
 
 /**
  * Created by Jinchao_1.Zhang on 2017/10/18.
  */
 @RunWith(AndroidJUnit4.class)
 public class tset {
-    UiDevice device;
-    MyUntil until;
+    private UiDevice device;
+    private MyUntil until;
+    private String path = Environment.getExternalStorageDirectory().toString()+"/.antutu/last_result.json";
 
     @Test
-    public void test() throws UiObjectNotFoundException {
+    public void test() throws Exception {
         device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         int x = device.getDisplayWidth();
         int y = device.getDisplayHeight();
         until = new MyUntil();
         until.entraps("am start com.android.settings");
-        if (getProp("ro.build.version.release").toString().contains("8.0")){
-            UiScrollable lis = new UiScrollable(new UiSelector().resourceId("com.android.settings:id/dashboard_container"));
-            lis.scrollTextIntoView("应用和通知");
-            UiObject2 app = device.wait(Until.findObject(By.text("应用和通知")), 1000);
-            app.clickAndWait(Until.newWindow(), 1000);
-            UiObject2 appinfo = device.wait(Until.findObject(By.text("应用信息")), 1000);
-            appinfo.clickAndWait(Until.newWindow(), 1000);
-            UiObject2 list = device.wait(Until.findObject(By.res("android:id/list")), 1000);
-            for (int n = 0; n < 6; n++) {
-                oppressions(device, list);
-                device.swipe(x / 2, y / 5 * 4, x / 2, y / 5, 30);
+        until.tookscreen(getClass().getSimpleName().toString(),"as");
+
+
+//        if (getProp("ro.build.version.release").toString().contains("8.0")){
+//            UiScrollable lis = new UiScrollable(new UiSelector().resourceId("com.android.settings:id/dashboard_container"));
+//            lis.scrollTextIntoView("应用和通知");
+//            UiObject2 app = device.wait(Until.findObject(By.text("应用和通知")), 1000);
+//            app.clickAndWait(Until.newWindow(), 1000);
+//            UiObject2 appinfo = device.wait(Until.findObject(By.text("应用信息")), 1000);
+//            appinfo.clickAndWait(Until.newWindow(), 1000);
+//            UiObject2 list = device.wait(Until.findObject(By.res("android:id/list")), 1000);
+//            for (int n = 0; n < 6; n++) {
+//                oppressions(device, list);
+//                device.swipe(x / 2, y / 5 * 4, x / 2, y / 5, 30);
+//            }
+//        }else {
+//            UiScrollable lis = new UiScrollable(new UiSelector().resourceId("com.android.settings:id/dashboard_container"));
+//            lis.scrollTextIntoView("应用");
+//            UiObject2 app = device.wait(Until.findObject(By.text("应用")), 1000);
+//            app.clickAndWait(Until.newWindow(), 1000);
+//            UiObject2 list = device.wait(Until.findObject(By.res("android:id/list")), 1000);
+//            for (int n = 0; n < 6; n++) {
+//                oppressions(device, list);
+//                device.swipe(x / 2, y / 5 * 4, x / 2, y / 5, 30);
+//            }
+//        }
+        String result ="",line = "";
+        String key = "",value = "";
+        try {
+            FileInputStream Fis=new FileInputStream(path);
+            BufferedReader buf =new BufferedReader(new InputStreamReader(Fis));
+            while ((line=buf.readLine())!=null){
+                    result+=line;
             }
-        }else {
-            UiScrollable lis = new UiScrollable(new UiSelector().resourceId("com.android.settings:id/dashboard_container"));
-            lis.scrollTextIntoView("应用");
-            UiObject2 app = device.wait(Until.findObject(By.text("应用")), 1000);
-            app.clickAndWait(Until.newWindow(), 1000);
-            UiObject2 list = device.wait(Until.findObject(By.res("android:id/list")), 1000);
-            for (int n = 0; n < 6; n++) {
-                oppressions(device, list);
-                device.swipe(x / 2, y / 5 * 4, x / 2, y / 5, 30);
+            JSONObject jsonObject=new JSONObject(result);
+            Iterator iterator = jsonObject.keys();
+            while (iterator.hasNext()){
+                key = (String) iterator.next();
+                value = jsonObject.getString(key);
+                System.out.println(key+":"+value);
             }
+           } catch (Exception e) {
+            e.printStackTrace();
         }
 
         System.out.println("系统android版本号:" + getProp("ro.build.version.release"));
