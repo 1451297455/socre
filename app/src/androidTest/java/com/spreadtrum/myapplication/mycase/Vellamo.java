@@ -1,6 +1,7 @@
 package com.spreadtrum.myapplication.mycase;
 
 import android.os.RemoteException;
+import android.os.SystemClock;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.uiautomator.By;
@@ -94,7 +95,8 @@ public class Vellamo {
         cancle.clickAndWait(Until.newWindow(), 1000);
         Thread.sleep(2000);
         myUntil.tookscreen(classname, "total");
-        device.swipe(x / 2, y / 5 * 4, x / 2, y / 5, 20);
+        device.swipe(x / 2, y / 5, x / 2, y / 5 * 4, 20);
+        SystemClock.sleep(2000);
         UiScrollable scrollable1 = new UiScrollable(new UiSelector().resourceId("com.quicinc.vellamo:id/score_pane_cards"));
         scrollable1.scrollTextIntoView("各项子测试得分");
         UiObject2 socreitem = device.wait(Until.findObject(By.text("各项子测试得分")), 1000);

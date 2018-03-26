@@ -1,18 +1,18 @@
 package com.spreadtrum.myapplication.mycase;
 
 import android.os.RemoteException;
+import android.os.SystemClock;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.uiautomator.By;
 import android.support.test.uiautomator.UiDevice;
+import android.support.test.uiautomator.UiObject;
 import android.support.test.uiautomator.UiObject2;
 import android.support.test.uiautomator.UiObjectNotFoundException;
 import android.support.test.uiautomator.UiScrollable;
 import android.support.test.uiautomator.UiSelector;
 import android.support.test.uiautomator.UiWatcher;
 import android.support.test.uiautomator.Until;
-import android.util.Log;
-import android.widget.Toast;
 
 import com.spreadtrum.myapplication.help.MyUntil;
 import com.spreadtrum.myapplication.help.item;
@@ -24,6 +24,7 @@ import org.junit.runner.RunWith;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Properties;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -44,105 +45,213 @@ public class Geekbench {
     int x, y, i = 600;
     private final String classname = getClass().getSimpleName();
     private item myitem = null;
-    private ArrayList<item> list = null;
 
     @Before
     public void init() {
         device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         myUntil = new MyUntil();
-        list = new ArrayList<>();
         x = device.getDisplayWidth();
         y = device.getDisplayHeight();
     }
 
     @Test
-    public void test() throws RemoteException, InterruptedException, UiObjectNotFoundException {
-        myUntil.openScreen();
-        myUntil.wifiOn();
-        myUntil.entraps(appstart);
+    public void test() throws RemoteException, InterruptedException, UiObjectNotFoundException, IOException {
+        String sysgetprop = device.executeShellCommand("getprop");
+        if (sysgetprop.contains("ro.com.google.gmsversion")) {
+            assertTrue("运行失败", runGMStest());
+        } else {
+            assertTrue("运行失败", runNativeTest());
+        }
 
-        device.registerWatcher("batterDialog", new UiWatcher() {
-            @Override
-            public boolean checkForCondition() {
-                UiObject2 yes = device.wait(Until.findObject(By.text("确定")), 1000);
-                if (yes != null) {
-                    yes.clickAndWait(Until.newWindow(), 2000);
-                    return true;
-                }
-                return false;
-            }
-        });
-       /* //test1
-        UiObject2 back = device.wait(Until.findObject(By.descContains("转到上一层级")), 1000);
-        back.clickAndWait(Until.newWindow(), 1000);
-        UiObject2 history = device.wait(Until.findObject(By.text("历史记录")), 1000);
-        history.clickAndWait(Until.newWindow(), 1000);
-        UiObject2 item = device.wait(Until.findObject(By.res("com.primatelabs.geekbench:id/historyRecycler")), 1000).getChildren().get(0);
-        item.clickAndWait(Until.newWindow(), 5000);
-        Thread.sleep(3000);*/
-        UiObject2 accept = device.wait(Until.findObject(By.text("同意")), 5000);
-        if (accept != null) {
-            accept.clickAndWait(Until.newWindow(), 5000);
-        }
-        UiObject2 run = device.wait(Until.findObject(By.res("com.primatelabs.geekbench:id/runCpuBenchmarks")), 1000);
-        if (run != null) {
-            run.clickAndWait(Until.newWindow(), 1000);
-        }
-        UiObject2 netweak=null;
-        UiObject2 result = device.wait(Until.findObject(By.text("跑分结果")), 1000);
-        while (result == null && i-- > 0) {
-            Thread.sleep(10000);
-            result = device.wait(Until.findObject(By.text("跑分结果")), 1000);
-            netweak = device.wait(Until.findObject(By.text("Geekbench 在与 Geekbench 浏览器通信时遇到了错误。Geekbench 需要有效的互联网连接才可运行跑分。")),1000);
-            if (netweak!=null){
-                break;
-            }
-        }
-        assertTrue("网络请求超时", netweak==null);
-        assertTrue("请求超时", i > 0);
-        if (result != null) {
-            myUntil.tookscreen(classname, "Total");
-//            UiScrollable scrollable = new UiScrollable(new UiSelector().resourceId("com.primatelabs.geekbench:id/benchmarkWebView"));
-            UiScrollable scrollable = new UiScrollable(new UiSelector().resourceId("com.primatelabs.geekbench:id/resultsViewPager"));
-            getTotaldata(scrollable, "Single-Core Score");
-            getTotaldata(scrollable, "Multi-Core Score");
-            getTotaldata(scrollable, "单核结果");
-            getTotaldata(scrollable, "多核结果");
-        }
     }
 
-    private void getTotaldata(UiScrollable scrollable, String key) throws UiObjectNotFoundException {
+    //NativeVersion
+    private boolean runNativeTest() throws RemoteException, InterruptedException, UiObjectNotFoundException {
+        try {
+            myUntil.openScreen();
+            myUntil.wifiOn();
+            myUntil.entraps(appstart);
 
-        UiObject2 name;
-        String value;
-        if (key.equals("Multi-Core Score")) {
-            name = device.wait(Until.findObject(By.desc(key)), 5000);
-            value = name.getParent().getChildren().get(3).getContentDescription();
-            myitem = new item(name.getContentDescription(), value);
-            list.add(myitem);
-        } else if (key.equals("Single-Core Score")) {
-            name = device.wait(Until.findObject(By.desc(key)), 5000);
-            Log.d("Sys", name.getContentDescription());
-            value = name.getParent().getChildren().get(1).getContentDescription();
-            myitem = new item(name.getContentDescription(), value);
-            list.add(myitem);
-        } else {
-            if (key.equals("单核结果")) {
-                scrollable.scrollDescriptionIntoView(key);
-                device.swipe(x / 2, y / 5 * 3, x / 2, y / 5, 100);
-            } else {
-                scrollable.scrollDescriptionIntoView(key);
+            device.registerWatcher("batterDialog", new UiWatcher() {
+                @Override
+                public boolean checkForCondition() {
+                    UiObject2 yes = device.wait(Until.findObject(By.text("确定")), 1000);
+                    if (yes != null) {
+                        yes.clickAndWait(Until.newWindow(), 2000);
+                        return true;
+                    }
+                    return false;
+                }
+            });
+
+            UiObject2 accept = device.wait(Until.findObject(By.text("同意")), 5000);
+            if (accept != null) {
+                accept.clickAndWait(Until.newWindow(), 5000);
+            }
+            UiObject2 run = device.wait(Until.findObject(By.res("com.primatelabs.geekbench:id/runCpuBenchmarks")), 1000);
+            if (run != null) {
+                run.clickAndWait(Until.newWindow(), 1000);
+            }
+            UiObject2 netweak = null;
+            UiObject2 result = device.wait(Until.findObject(By.text("跑分结果")), 1000);
+            while (result == null && i-- > 0) {
+                Thread.sleep(10000);
+                result = device.wait(Until.findObject(By.text("跑分结果")), 1000);
+                netweak = device.wait(Until.findObject(By.text("Geekbench1 在与 Geekbench1 浏览器通信时遇到了错误。Geekbench1 需要有效的互联网连接才可运行跑分。")), 1000);
+                if (netweak != null) {
+                    break;
+                }
+            }
+            assertTrue("网络请求超时", netweak == null);
+            assertTrue("请求超时", i > 0);
+            if (result != null) {
+                myUntil.tookscreen(classname, "Total");
+                UiScrollable scrollable = new UiScrollable(new UiSelector().resourceId("com.primatelabs.geekbench:id/resultsViewPager"));
+                getNativeScreen(scrollable, "单核结果");
+                getNativeScreen(scrollable, "多核结果");
             }
 
-//            UiObject2 parent = device.wait(Until.findObject(By.desc("密钥加密跑分 Score")), 5000).getParent().getParent().getParent();
-//            for (int j = 0; j < 4; j++) {
-//                name = parent.getChildren().get(j).getChildren().get(0).getChildren().get(0);
-//                value = parent.getChildren().get(j).getChildren().get(0).getChildren().get(1).getContentDescription();
-//            myitem = new item(name.getContentDescription(), value);
-//            list.add(myitem);
-//            }
-            myUntil.tookscreen(classname, key);
 
+            device.pressBack();
+            Thread.sleep(3000);
+            UiObject2 renderScript = device.wait(Until.findObject(By.text("运算跑分")), 2000);
+            renderScript.clickAndWait(Until.newWindow(), 2000);
+            Thread.sleep(2000);
+            UiObject2 renderRun = device.wait(Until.findObject(By.text("运行运算跑分")), 2000);
+            renderRun.clickAndWait(Until.newWindow(), 2000);
+            Thread.sleep(2000);
+
+            UiObject2 renderResult = device.wait(Until.findObject(By.text("跑分结果")), 1000);
+            while (renderResult == null && i-- > 0) {
+                Thread.sleep(10000);
+                renderResult = device.wait(Until.findObject(By.text("跑分结果")), 1000);
+                netweak = device.wait(Until.findObject(By.text("Geekbench1 在与 Geekbench1 浏览器通信时遇到了错误。Geekbench1 需要有效的互联网连接才可运行跑分。")), 1000);
+                if (netweak != null) {
+                    break;
+                }
+            }
+            assertTrue("网络请求超时", netweak == null);
+            assertTrue("请求超时", i > 0);
+            myUntil.tookscreen(classname, "renderScript");
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+
+    }
+
+    //GMSVersion
+    private boolean runGMStest() throws RemoteException, InterruptedException, UiObjectNotFoundException {
+        try {
+            myUntil.openScreen();
+            myUntil.wifiOn();
+            myUntil.entraps(appstart);
+
+            device.registerWatcher("batterDialog", new UiWatcher() {
+                @Override
+                public boolean checkForCondition() {
+                    UiObject2 yes = device.wait(Until.findObject(By.text("确定")), 1000);
+                    if (yes != null) {
+                        yes.clickAndWait(Until.newWindow(), 2000);
+                        return true;
+                    }
+                    return false;
+                }
+            });
+
+            UiObject2 accept = device.wait(Until.findObject(By.text("同意")), 5000);
+            if (accept != null) {
+                accept.clickAndWait(Until.newWindow(), 5000);
+            }
+            UiObject2 run = device.wait(Until.findObject(By.res("com.primatelabs.geekbench:id/runCpuBenchmarks")), 1000);
+            if (run != null) {
+                run.clickAndWait(Until.newWindow(), 1000);
+            }
+            UiObject2 netweak = null;
+            UiObject2 result = device.wait(Until.findObject(By.text("跑分结果")), 1000);
+//            UiObject2 result = device.wait(Until.findObject(By.text("Geekbench1 结果")), 1000);
+            while (result == null && i-- > 0) {
+                Thread.sleep(10000);
+                result = device.wait(Until.findObject(By.text("跑分结果")), 1000);
+                netweak = device.wait(Until.findObject(By.text("Geekbench1 在与 Geekbench1 浏览器通信时遇到了错误。Geekbench1 需要有效的互联网连接才可运行跑分。")), 1000);
+                if (netweak != null) {
+                    break;
+                }
+            }
+            assertTrue("网络请求超时", netweak == null);
+            assertTrue("请求超时", i > 0);
+            if (result != null) {
+                myUntil.tookscreen(classname, "Total");
+                UiScrollable scrollable = new UiScrollable(new UiSelector().resourceId("com.primatelabs.geekbench:id/resultsViewPager"));
+                getGmsScreen("单核结果");
+                getGmsScreen("多核结果");
+            }
+
+
+            device.pressBack();
+            Thread.sleep(3000);
+            UiObject2 renderScript = device.wait(Until.findObject(By.text("运算跑分")), 2000);
+            renderScript.clickAndWait(Until.newWindow(), 2000);
+            Thread.sleep(2000);
+            UiObject2 renderRun = device.wait(Until.findObject(By.text("运行运算跑分")), 2000);
+            renderRun.clickAndWait(Until.newWindow(), 2000);
+            Thread.sleep(2000);
+
+            UiObject2 renderResult = device.wait(Until.findObject(By.text("跑分结果")), 1000);
+            while (renderResult == null && i-- > 0) {
+                Thread.sleep(10000);
+                renderResult = device.wait(Until.findObject(By.text("跑分结果")), 1000);
+                netweak = device.wait(Until.findObject(By.text("Geekbench1 在与 Geekbench1 浏览器通信时遇到了错误。Geekbench1 需要有效的互联网连接才可运行跑分。")), 1000);
+                if (netweak != null) {
+                    break;
+                }
+            }
+            assertTrue("网络请求超时", netweak == null);
+            assertTrue("请求超时", i > 0);
+            myUntil.tookscreen(classname, "renderScript");
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+
+    }
+
+
+    private void getNativeScreen(UiScrollable scrollable, String key) throws UiObjectNotFoundException {
+        scrollable.scrollDescriptionIntoView(key);
+        myUntil.tookscreen(classname, key);
+
+    }
+
+    private void getGmsScreen( String key) throws UiObjectNotFoundException {
+        if (key.equals("单核结果")&&device.getDisplayHeight()<1900) {
+            device.swipe(device.getDisplayWidth() / 2, device.getDisplayHeight() / 5 * 3, device.getDisplayWidth() / 2, device.getDisplayHeight() / 5, 20);
+            SystemClock.sleep(1000);
+            device.swipe(device.getDisplayWidth() / 2, device.getDisplayHeight() / 5 * 3, device.getDisplayWidth() / 2, device.getDisplayHeight() / 5, 20);
+            SystemClock.sleep(1000);
+            myUntil.tookscreen(classname, key);
+        } else if (key.equals("单核结果")&&device.getDisplayHeight()>1900){
+            device.swipe(device.getDisplayWidth() / 2, device.getDisplayHeight() / 5 * 3, device.getDisplayWidth() / 2, device.getDisplayHeight() / 5, 20);
+            SystemClock.sleep(1000);
+            myUntil.tookscreen(classname, key);
+        }else if (key.equals("多核结果")&&device.getDisplayHeight()<1900){
+            device.swipe(device.getDisplayWidth() / 2, device.getDisplayHeight() / 5 * 3, device.getDisplayWidth() / 2, device.getDisplayHeight() / 5, 20);
+            SystemClock.sleep(1000);
+            device.swipe(device.getDisplayWidth() / 2, device.getDisplayHeight() / 5 * 3, device.getDisplayWidth() / 2, device.getDisplayHeight() / 5, 20);
+            SystemClock.sleep(1000);
+            device.swipe(device.getDisplayWidth() / 2, device.getDisplayHeight() / 5 * 3, device.getDisplayWidth() / 2, device.getDisplayHeight() / 5, 20);
+            SystemClock.sleep(1000);
+            device.swipe(device.getDisplayWidth() / 2, device.getDisplayHeight() / 5 * 3, device.getDisplayWidth() / 2, device.getDisplayHeight() / 5, 20);
+            SystemClock.sleep(1000);
+            myUntil.tookscreen(classname, key);
+        }else if (key.equals("多核结果")&&device.getDisplayHeight()>1900){
+            device.swipe(device.getDisplayWidth() / 2, device.getDisplayHeight() / 5 * 3, device.getDisplayWidth() / 2, device.getDisplayHeight() / 5, 20);
+            SystemClock.sleep(1000);
+            device.swipe(device.getDisplayWidth() / 2, device.getDisplayHeight() / 5 * 3, device.getDisplayWidth() / 2, device.getDisplayHeight() / 5, 20);
+            SystemClock.sleep(1000);
+            device.swipe(device.getDisplayWidth() / 2, device.getDisplayHeight() / 5 * 3, device.getDisplayWidth() / 2, device.getDisplayHeight() / 5, 20);
+            SystemClock.sleep(1000);
+            myUntil.tookscreen(classname, key);
         }
 
 
@@ -150,8 +259,7 @@ public class Geekbench {
 
     @After
     public void end() throws ParserConfigurationException, TransformerException, IOException {
-//        myUntil.Writexml(list, classname);
-//        myUntil.entraps(appkill);
+        myUntil.entraps(appkill);
     }
 
 }

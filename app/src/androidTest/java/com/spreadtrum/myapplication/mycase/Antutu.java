@@ -38,7 +38,7 @@ public class Antutu {
     private final String activity = "com.antutu.ABenchMark.ABenchMarkStart";
     private final String appstart = " am start -n " + packagename + "/" + activity;
     private final String appkill = "am force-stop " + packagename;
-    private final  String path = Environment.getExternalStorageDirectory().toString()+"/.antutu/last_result.json";
+    private final String path = Environment.getExternalStorageDirectory().toString() + "/.antutu/last_result.json";
     private MyUntil myUntil = null;
     private UiDevice device = null;
     int i = 200;
@@ -71,6 +71,9 @@ public class Antutu {
                 return false;
             }
         });
+        if (device.hasWatcherTriggered("batterDialog")) {
+            device.resetWatcherTriggers();
+        }
 
         device.executeShellCommand("am start -S -W -n com.antutu.ABenchMark/com.antutu.ABenchMark.ABenchMarkStart");
         device.executeShellCommand("am start -S -W -n com.antutu.ABenchMark/com.antutu.ABenchMark.ABenchMarkStart -e 74Sd42l35nH e57b6eb9906e27062fc7fcfcc820b957a5c33b649");
@@ -79,8 +82,6 @@ public class Antutu {
             Thread.sleep(1000);
             result = device.wait(Until.findObject(By.res("com.antutu.ABenchMark:id/title_text").text("测试详情")), 1000);
         }
-//        UiObject2 a = device.wait(Until.findObject(By.res("com.antutu.ABenchMark:id/ll_score")), 1000);
-//        a.clickAndWait(Until.newWindow(), 2000);
         myUntil.tookscreen(classname, "Total");
         UiObject2 Total = device.wait(Until.findObject(By.res("com.antutu.ABenchMark:id/tv_score")), 1000);
         myitem = new item("Total", Total.getText());
@@ -102,23 +103,23 @@ public class Antutu {
         getdata("CPU 常用算法", scrollable);
         getdata("CPU 多核性能", scrollable);
         getdata("RAM性能", scrollable);
-        getItemsocre(path,myitem);
+        getItemsocre(path, myitem);
     }
 
-    private void getItemsocre(String path,item lowitem){
-        String result ="",line = "",key = "",value = "";
+    private void getItemsocre(String path, item lowitem) {
+        String result = "", line = "", key = "", value = "";
         try {
-            FileInputStream Fis=new FileInputStream(path);
-            BufferedReader buf =new BufferedReader(new InputStreamReader(Fis));
-            while ((line=buf.readLine())!=null){
-                result+=line;
+            FileInputStream Fis = new FileInputStream(path);
+            BufferedReader buf = new BufferedReader(new InputStreamReader(Fis));
+            while ((line = buf.readLine()) != null) {
+                result += line;
             }
-            JSONObject jsonObject=new JSONObject(result);
+            JSONObject jsonObject = new JSONObject(result);
             Iterator iterator = jsonObject.keys();
-            while (iterator.hasNext()){
+            while (iterator.hasNext()) {
                 key = (String) iterator.next();
                 value = jsonObject.getString(key);
-                lowitem =new item(key,value);
+                lowitem = new item(key, value);
                 lowlist.add(lowitem);
             }
         } catch (Exception e) {
@@ -127,7 +128,11 @@ public class Antutu {
     }
 
     private void getdata(String name, UiScrollable scrollable) throws Exception {
-        scrollable.scrollTextIntoView(name);
+        if (name.equals("RAM性能")) {
+            scrollable.scrollToEnd(3);
+        } else {
+            scrollable.scrollTextIntoView(name);
+        }
         UiObject2 data = device.wait(Until.findObject(By.text(name)), 1000);
         data.clickAndWait(Until.newWindow(), 1000);
         UiObject2 score = data.getParent().getChildren().get(2);
@@ -140,7 +145,7 @@ public class Antutu {
     @After
     public void end() throws Exception {
         myUntil.Writexml(list, classname);
-        myUntil.Writexml(lowlist, classname+"low");
+        myUntil.Writexml(lowlist, classname + "low");
         myUntil.entraps(appkill);
         device.pressHome();
     }

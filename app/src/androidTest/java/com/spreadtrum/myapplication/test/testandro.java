@@ -1,5 +1,7 @@
 package com.spreadtrum.myapplication.test;
 
+import android.content.Intent;
+import android.provider.Settings;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.uiautomator.By;
@@ -7,6 +9,7 @@ import android.support.test.uiautomator.UiDevice;
 import android.support.test.uiautomator.UiObject2;
 import android.support.test.uiautomator.Until;
 import android.util.Log;
+
 
 import org.junit.After;
 import org.junit.Before;
@@ -32,15 +35,13 @@ public class testandro {
 
     @Test
     public void test() throws IOException, InterruptedException {
-        device.executeShellCommand(appstart);
-        Thread.sleep(2000);
-        UiObject2 run = device.wait(Until.findObject(By.res("com.andromeda.androbench2:id/btnStartingBenchmarking")), 5000);
-        if (run!=null){
-            Log.d("exist", run.getResourceName());
-            run.clickAndWait(Until.newWindow(), 1000);
-        }else {
-            Log.d("exist", run.getResourceName());
+        String a = device.executeShellCommand("getprop");
+        if (a.contains("ro.com.google.gmsversion")) {
+            System.out.println("true");
+        } else {
+            System.out.println("false");
         }
+        Intent intent = new Intent();
     }
 
     @After

@@ -74,22 +74,13 @@ public class ludashi {
         if (close != null) {
             close.clickAndWait(Until.newWindow(), 2000);
         }
-        device.click(device.getDisplayHeight() / 8, device.getDisplayHeight() / 200 * 199);
+        device.click(device.getDisplayWidth() / 8, device.getDisplayHeight() / 200 * 199);
         Thread.sleep(1000);
-        device.click(device.getDisplayWidth() / 4, device.getDisplayHeight() / 8 * 5);
+        device.click(device.getDisplayWidth() / 3, device.getDisplayHeight() / 2);
         Thread.sleep(1000);
-       /* UiObject2 pingce = device.wait(Until.findObject(By.res("com.ludashi.benchmark:id/tabwidget_textview").text("评测")), 1000);
-        pingce.clickAndWait(Until.newWindow(), 1000);
-        UiObject2 performance = device.wait(Until.findObject(By.text("性能评测")), 1000);
-        int x = performance.getVisibleCenter().x;
-        int y = performance.getVisibleCenter().y;
-        device.click(x, y);
-        /*UiObject2 per=device.wait(Until.findObject(By.res*//*("android:id/tabhost")),1000).getChildren().get(0).getChildren().get(3);
-        per.clickAndWait(Until.newWindow(), 1000);*/
-
         try {
             UiObject2 starttest = device.wait(Until.findObject(By.res("com.ludashi.benchmark:id/btn_rebench").text("重新评测")), 1000);
-            starttest.clickAndWait(Until.newWindow(), 1000);
+//            starttest.clickAndWait(Until.newWindow(), 1000);
         } catch (Exception e) {
             System.out.println("first test1");
         }
@@ -124,14 +115,12 @@ public class ludashi {
         Thread.sleep(1000);
 
         //体验评测
-        device.click(device.getDisplayWidth() / 4 * 3, device.getDisplayHeight() / 8 * 5);
+        device.click(device.getDisplayWidth() / 3*2, device.getDisplayHeight() / 2);
         Thread.sleep(1000);
-//        UiObject2 expierence = device.wait(Until.findObject(By.res("com.ludashi.benchmark:id/ll_expierence_test_item")), 1000);
-//        expierence.clickAndWait(Until.newWindow(), 1000);
 
         UiObject2 retest = device.wait(Until.findObject(By.text("重新评测")), 1000);
         if (retest != null) {
-            retest.clickAndWait(Until.newWindow(), 1000);
+//            retest.clickAndWait(Until.newWindow(), 1000);
         }
         result = device.wait(Until.findObject(By.text("【鲁大师】体验评测结果")), 1000);
         while (result == null && i-- > 0) {
@@ -158,8 +147,10 @@ public class ludashi {
         getdata(scrollable1, "相册缩略图列表加载");
         getdata(scrollable1, "单张照片查看与操作");
         getdata(scrollable1, "视觉体验");
-        getdata(scrollable1, "文件拷贝");
+        getdata(scrollable1, "文件拷贝与闪存测试");
         getdata(scrollable1, "拷贝速度");
+        getdata(scrollable1, "闪存读取速度");
+        getdata(scrollable1, "闪存写入速度");
         getdata(scrollable1, "开机自启动");
         getdata(scrollable1, "开机自启应用耗费总内存得分");
         getdata(scrollable1, "开机自启应用数得分");
@@ -169,34 +160,39 @@ public class ludashi {
     }
 
     private void getdata(UiScrollable scrollable, String key) throws UiObjectNotFoundException {
-        scrollable.scrollTextIntoView(key);
+        scrollable.scrollTextIntoView(key); UiObject2 value=null;
         UiObject2 name = device.wait(Until.findObject(By.text(key)), 10000);
-        UiObject2 value;
-        if (key.equals("桌面使用") || key.equals("APP使用") || key.equals("网页内容加载与滑动") || key.equals("照片查看与操作") || key.equals("文件拷贝") || key.equals("开机自启动")) {
-            value = name.getParent().getChildren().get(1);
-        } else {
-            value = name.getParent().getChildren().get(2);
+        if (key.equals("桌面使用")||key.equals("APP使用")||key.equals("网页内容加载与滑动")||key.equals("照片查看与操作")||key.equals("文件拷贝与闪存测试")||key.equals("开机自启动")){
+            value= name.getParent().getChildren().get(1);
+        }else {
+            value= name.getParent().getChildren().get(2);
         }
         myitem = new item(name.getText(), value.getText());
-        System.out.print(name.getText() + ":" + value.getText());
+        System.out.println(name.getText() + ":" + value.getText());
         list.add(myitem);
         myUntil.tookscreen(getClass().getSimpleName(), key);
     }
 
     private void getdata(String key, UiScrollable scrollable) throws UiObjectNotFoundException {
         if (key.equals("数据库")) {
-            scrollable.scrollToEnd(20);
+            scrollable.scrollToEnd(5);
+        } else {
+            scrollable.scrollTextIntoView(key);
         }
-        scrollable.scrollTextIntoView(key);
         UiObject2 name = device.wait(Until.findObject(By.text(key)), 1000);
-        UiObject2 value;
+        UiObject2 value = null;
         if (key.equals("CPU") || key.equals("GPU")) {
             value = name.getParent().getParent().getChildren().get(2).getChildren().get(0);
-        } else if (key.equals("RAM") || key.equals("存储性能")) {
-            value = name.getParent().getParent().getChildren().get(3).getChildren().get(0);
-        } else {
+        } else if (key.equals("RAM")||key.equals("存储性能")) {
+            try {
+                value = name.getParent().getParent().getChildren().get(3).getChildren().get(0);
+            }catch (IndexOutOfBoundsException e){
+                value = name.getParent().getParent().getChildren().get(2).getChildren().get(0);
+            }
+        }  else {
             value = name.getParent().getChildren().get(1);
         }
+        System.out.println(name.getText()+":"+value.getText());
         myitem = new item(name.getText(), value.getText());
         list.add(myitem);
         myUntil.tookscreen(getClass().getSimpleName(), key);

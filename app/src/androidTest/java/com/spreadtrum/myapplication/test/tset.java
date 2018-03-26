@@ -1,6 +1,7 @@
 package com.spreadtrum.myapplication.test;
 
 import android.os.Environment;
+import android.os.SystemClock;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.uiautomator.By;
@@ -44,8 +45,10 @@ public class tset {
         int x = device.getDisplayWidth();
         int y = device.getDisplayHeight();
         until = new MyUntil();
-        until.entraps("am start com.android.settings");
-        until.tookscreen(getClass().getSimpleName().toString(),"as");
+        device.swipe(device.getDisplayWidth() / 2, device.getDisplayHeight() / 5 * 3, device.getDisplayWidth() / 2, device.getDisplayHeight() / 5, 20);
+        SystemClock.sleep(1000);
+//        until.entraps("am start com.android.settings");
+//        until.tookscreen(getClass().getSimpleName(),"as");
 
 
 //        if (getProp("ro.build.version.release").toString().contains("8.0")){
@@ -71,24 +74,24 @@ public class tset {
 //                device.swipe(x / 2, y / 5 * 4, x / 2, y / 5, 30);
 //            }
 //        }
-        String result ="",line = "";
-        String key = "",value = "";
-        try {
-            FileInputStream Fis=new FileInputStream(path);
-            BufferedReader buf =new BufferedReader(new InputStreamReader(Fis));
-            while ((line=buf.readLine())!=null){
-                    result+=line;
-            }
-            JSONObject jsonObject=new JSONObject(result);
-            Iterator iterator = jsonObject.keys();
-            while (iterator.hasNext()){
-                key = (String) iterator.next();
-                value = jsonObject.getString(key);
-                System.out.println(key+":"+value);
-            }
-           } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        String result ="",line = "";
+//        String key = "",value = "";
+//        try {
+//            FileInputStream Fis=new FileInputStream(path);
+//            BufferedReader buf =new BufferedReader(new InputStreamReader(Fis));
+//            while ((line=buf.readLine())!=null){
+//                    result+=line;
+//            }
+//            JSONObject jsonObject=new JSONObject(result);
+//            Iterator iterator = jsonObject.keys();
+//            while (iterator.hasNext()){
+//                key = (String) iterator.next();
+//                value = jsonObject.getString(key);
+//                System.out.println(key+":"+value);
+//            }
+//           } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
         System.out.println("系统android版本号:" + getProp("ro.build.version.release"));
 //        String a = System.getProperty("ro.build.version.sdk");
@@ -97,7 +100,7 @@ public class tset {
 
     @After
     public void end() {
-        device.pressHome();
+//        device.pressHome();
         until.entraps("am force-stop com.android.settings");
     }
 
