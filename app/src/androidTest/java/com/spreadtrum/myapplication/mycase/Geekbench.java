@@ -70,7 +70,7 @@ public class Geekbench {
         try {
             myUntil.openScreen();
             myUntil.wifiOn();
-//            myUntil.entraps(appstart);
+            myUntil.entraps(appstart);
 
             device.registerWatcher("batterDialog", new UiWatcher() {
                 @Override
@@ -90,14 +90,14 @@ public class Geekbench {
             }
             UiObject2 run = device.wait(Until.findObject(By.res("com.primatelabs.geekbench:id/runCpuBenchmarks")), 1000);
             if (run != null) {
-//                run.clickAndWait(Until.newWindow(), 1000);
+                run.clickAndWait(Until.newWindow(), 1000);
             }
             UiObject2 netweak = null;
             UiObject2 result = device.wait(Until.findObject(By.text("跑分结果")), 1000);
             while (result == null && i-- > 0) {
                 Thread.sleep(10000);
-//                result = device.wait(Until.findObject(By.text("跑分结果")), 1000);
-                result = device.wait(Until.findObject(By.desc("Geekbench 结果")), 1000);
+                result = device.wait(Until.findObject(By.text("跑分结果")), 1000);
+//                result = device.wait(Until.findObject(By.desc("Geekbench 结果")), 1000);
                 netweak = device.wait(Until.findObject(By.text("Geekbench1 在与 Geekbench1 浏览器通信时遇到了错误。Geekbench1 需要有效的互联网连接才可运行跑分。")), 1000);
                 if (netweak != null) {
                     break;
