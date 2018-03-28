@@ -31,7 +31,7 @@ import javax.xml.transform.TransformerException;
  * Created by Jinchao_1.Zhang on 2017/9/14.
  */
 @RunWith(AndroidJUnit4.class)
-public class ludashi {
+public class ludashi6 {
 
 
     private String packagename = "com.ludashi.benchmark";
@@ -76,9 +76,8 @@ public class ludashi {
             close.clickAndWait(Until.newWindow(), 2000);
         }
         device.click(device.getDisplayWidth() / 8, device.getDisplayHeight() / 200 * 199);
-        Thread.sleep(2000);
-//        UiObject2 performance = device.wait(Until.findObject(By.res("com.ludashi6.benchmark:id/ll_performance_test_item")), 2000);
-        device.click(device.getDisplayWidth() / 3, device.getDisplayHeight() / 5*3);
+        Thread.sleep(1000);
+        device.click(device.getDisplayWidth() / 3, device.getDisplayHeight() / 2);
         Thread.sleep(1000);
         try {
             UiObject2 starttest = device.wait(Until.findObject(By.res("com.ludashi.benchmark:id/btn_rebench").text("重新评测")), 1000);
@@ -118,7 +117,7 @@ public class ludashi {
         Thread.sleep(1000);
 
         //体验评测
-        device.click(device.getDisplayWidth() / 3 * 2, device.getDisplayHeight() / 5*3);
+        device.click(device.getDisplayWidth() / 3*2, device.getDisplayHeight() / 2);
         Thread.sleep(1000);
 
         UiObject2 retest = device.wait(Until.findObject(By.text("重新评测")), 1000);
@@ -163,13 +162,12 @@ public class ludashi {
     }
 
     private void getdata(UiScrollable scrollable, String key) throws UiObjectNotFoundException {
-        scrollable.scrollTextIntoView(key);
-        UiObject2 value = null;
+        scrollable.scrollTextIntoView(key); UiObject2 value=null;
         UiObject2 name = device.wait(Until.findObject(By.text(key)), 10000);
-        if (key.equals("桌面使用") || key.equals("APP使用") || key.equals("网页内容加载与滑动") || key.equals("照片查看与操作") || key.equals("文件拷贝与闪存测试") || key.equals("开机自启动")) {
-            value = name.getParent().getChildren().get(1);
-        } else {
-            value = name.getParent().getChildren().get(2);
+        if (key.equals("桌面使用")||key.equals("APP使用")||key.equals("网页内容加载与滑动")||key.equals("照片查看与操作")||key.equals("文件拷贝与闪存测试")||key.equals("开机自启动")){
+            value= name.getParent().getChildren().get(1);
+        }else {
+            value= name.getParent().getChildren().get(2);
         }
         myitem = new item(name.getText(), value.getText());
         System.out.println(name.getText() + ":" + value.getText());
@@ -187,16 +185,16 @@ public class ludashi {
         UiObject2 value = null;
         if (key.equals("CPU") || key.equals("GPU")) {
             value = name.getParent().getParent().getChildren().get(2).getChildren().get(0);
-        } else if (key.equals("RAM") || key.equals("存储性能")) {
+        } else if (key.equals("RAM")||key.equals("存储性能")) {
             try {
                 value = name.getParent().getParent().getChildren().get(3).getChildren().get(0);
-            } catch (IndexOutOfBoundsException e) {
+            }catch (IndexOutOfBoundsException e){
                 value = name.getParent().getParent().getChildren().get(2).getChildren().get(0);
             }
-        } else {
+        }  else {
             value = name.getParent().getChildren().get(1);
         }
-        System.out.println(name.getText() + ":" + value.getText());
+        System.out.println(name.getText()+":"+value.getText());
         myitem = new item(name.getText(), value.getText());
         list.add(myitem);
         myUntil.tookscreen(getClass().getSimpleName(), key);

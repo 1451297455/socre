@@ -70,7 +70,7 @@ public class Geekbench {
         try {
             myUntil.openScreen();
             myUntil.wifiOn();
-            myUntil.entraps(appstart);
+//            myUntil.entraps(appstart);
 
             device.registerWatcher("batterDialog", new UiWatcher() {
                 @Override
@@ -90,13 +90,14 @@ public class Geekbench {
             }
             UiObject2 run = device.wait(Until.findObject(By.res("com.primatelabs.geekbench:id/runCpuBenchmarks")), 1000);
             if (run != null) {
-                run.clickAndWait(Until.newWindow(), 1000);
+//                run.clickAndWait(Until.newWindow(), 1000);
             }
             UiObject2 netweak = null;
             UiObject2 result = device.wait(Until.findObject(By.text("跑分结果")), 1000);
             while (result == null && i-- > 0) {
                 Thread.sleep(10000);
-                result = device.wait(Until.findObject(By.text("跑分结果")), 1000);
+//                result = device.wait(Until.findObject(By.text("跑分结果")), 1000);
+                result = device.wait(Until.findObject(By.desc("Geekbench 结果")), 1000);
                 netweak = device.wait(Until.findObject(By.text("Geekbench1 在与 Geekbench1 浏览器通信时遇到了错误。Geekbench1 需要有效的互联网连接才可运行跑分。")), 1000);
                 if (netweak != null) {
                     break;
@@ -106,9 +107,31 @@ public class Geekbench {
             assertTrue("请求超时", i > 0);
             if (result != null) {
                 myUntil.tookscreen(classname, "Total");
-                UiScrollable scrollable = new UiScrollable(new UiSelector().resourceId("com.primatelabs.geekbench:id/resultsViewPager"));
-                getNativeScreen(scrollable, "单核结果");
-                getNativeScreen(scrollable, "多核结果");
+                device.swipe(device.getDisplayWidth() / 2, device.getDisplayHeight() / 6 * 3, device.getDisplayWidth() / 2, device.getDisplayHeight() / 6, 20);
+                SystemClock.sleep(1000);
+                myUntil.tookscreen(classname, "result1");
+                device.swipe(device.getDisplayWidth() / 2, device.getDisplayHeight() / 6 * 3, device.getDisplayWidth() / 2, device.getDisplayHeight() / 6, 20);
+                SystemClock.sleep(1000);
+                myUntil.tookscreen(classname, "result2");
+                device.swipe(device.getDisplayWidth() / 2, device.getDisplayHeight() / 6 * 3, device.getDisplayWidth() / 2, device.getDisplayHeight() / 6, 20);
+                SystemClock.sleep(1000);
+                myUntil.tookscreen(classname, "result3");
+                device.swipe(device.getDisplayWidth() / 2, device.getDisplayHeight() / 6 * 3, device.getDisplayWidth() / 2, device.getDisplayHeight() / 6, 20);
+                SystemClock.sleep(1000);
+                myUntil.tookscreen(classname, "result4");
+                device.swipe(device.getDisplayWidth() / 2, device.getDisplayHeight() / 6 * 3, device.getDisplayWidth() / 2, device.getDisplayHeight() / 6, 20);
+                SystemClock.sleep(1000);
+                myUntil.tookscreen(classname, "result5");
+                device.swipe(device.getDisplayWidth() / 2, device.getDisplayHeight() / 6 * 3, device.getDisplayWidth() / 2, device.getDisplayHeight() / 6, 20);
+                SystemClock.sleep(1000);
+                myUntil.tookscreen(classname, "result6");
+                device.swipe(device.getDisplayWidth() / 2, device.getDisplayHeight() / 6 * 3, device.getDisplayWidth() / 2, device.getDisplayHeight() / 6, 20);
+                SystemClock.sleep(1000);
+                myUntil.tookscreen(classname, "result7");
+//                myUntil.tookscreen(classname, "Total");
+//                UiScrollable scrollable = new UiScrollable(new UiSelector().resourceId("com.primatelabs.geekbench:id/resultsViewPager"));
+//                getNativeScreen(scrollable, "单核结果");
+//                getNativeScreen(scrollable, "多核结果");
             }
 
 
@@ -182,9 +205,33 @@ public class Geekbench {
             assertTrue("请求超时", i > 0);
             if (result != null) {
                 myUntil.tookscreen(classname, "Total");
-                UiScrollable scrollable = new UiScrollable(new UiSelector().resourceId("com.primatelabs.geekbench:id/resultsViewPager"));
-                getGmsScreen("单核结果");
-                getGmsScreen("多核结果");
+                device.swipe(device.getDisplayWidth() / 2, device.getDisplayHeight() / 6 * 3, device.getDisplayWidth() / 2, device.getDisplayHeight() / 6, 20);
+                SystemClock.sleep(1000);
+                myUntil.tookscreen(classname, "result1");
+                device.swipe(device.getDisplayWidth() / 2, device.getDisplayHeight() / 6 * 3, device.getDisplayWidth() / 2, device.getDisplayHeight() / 6, 20);
+                SystemClock.sleep(1000);
+                myUntil.tookscreen(classname, "result2");
+                device.swipe(device.getDisplayWidth() / 2, device.getDisplayHeight() / 6 * 3, device.getDisplayWidth() / 2, device.getDisplayHeight() / 6, 20);
+                SystemClock.sleep(1000);
+                myUntil.tookscreen(classname, "result3");
+                device.swipe(device.getDisplayWidth() / 2, device.getDisplayHeight() / 6 * 3, device.getDisplayWidth() / 2, device.getDisplayHeight() / 6, 20);
+                SystemClock.sleep(1000);
+                myUntil.tookscreen(classname, "result4");
+                device.swipe(device.getDisplayWidth() / 2, device.getDisplayHeight() / 6 * 3, device.getDisplayWidth() / 2, device.getDisplayHeight() / 6, 20);
+                SystemClock.sleep(1000);
+                myUntil.tookscreen(classname, "result5");
+                device.swipe(device.getDisplayWidth() / 2, device.getDisplayHeight() / 6 * 3, device.getDisplayWidth() / 2, device.getDisplayHeight() / 6, 20);
+                SystemClock.sleep(1000);
+                myUntil.tookscreen(classname, "result6");
+                device.swipe(device.getDisplayWidth() / 2, device.getDisplayHeight() / 6 * 3, device.getDisplayWidth() / 2, device.getDisplayHeight() / 6, 20);
+                SystemClock.sleep(1000);
+                myUntil.tookscreen(classname, "result7");
+                device.swipe(device.getDisplayWidth() / 2, device.getDisplayHeight() / 6 * 3, device.getDisplayWidth() / 2, device.getDisplayHeight() / 6, 20);
+                SystemClock.sleep(1000);
+                myUntil.tookscreen(classname, "result8");
+//                UiScrollable scrollable = new UiScrollable(new UiSelector().resourceId("com.primatelabs.geekbench:id/resultsViewPager"));
+//                getGmsScreen("单核结果");
+//                getGmsScreen("多核结果");
             }
 
 
@@ -223,18 +270,18 @@ public class Geekbench {
 
     }
 
-    private void getGmsScreen( String key) throws UiObjectNotFoundException {
-        if (key.equals("单核结果")&&device.getDisplayHeight()<1900) {
+    private void getGmsScreen(String key) throws UiObjectNotFoundException {
+        if (key.equals("单核结果") && device.getDisplayHeight() < 1900) {
             device.swipe(device.getDisplayWidth() / 2, device.getDisplayHeight() / 5 * 3, device.getDisplayWidth() / 2, device.getDisplayHeight() / 5, 20);
             SystemClock.sleep(1000);
             device.swipe(device.getDisplayWidth() / 2, device.getDisplayHeight() / 5 * 3, device.getDisplayWidth() / 2, device.getDisplayHeight() / 5, 20);
             SystemClock.sleep(1000);
             myUntil.tookscreen(classname, key);
-        } else if (key.equals("单核结果")&&device.getDisplayHeight()>1900){
+        } else if (key.equals("单核结果") && device.getDisplayHeight() > 1900) {
             device.swipe(device.getDisplayWidth() / 2, device.getDisplayHeight() / 5 * 3, device.getDisplayWidth() / 2, device.getDisplayHeight() / 5, 20);
             SystemClock.sleep(1000);
             myUntil.tookscreen(classname, key);
-        }else if (key.equals("多核结果")&&device.getDisplayHeight()<1900){
+        } else if (key.equals("多核结果") && device.getDisplayHeight() < 1900) {
             device.swipe(device.getDisplayWidth() / 2, device.getDisplayHeight() / 5 * 3, device.getDisplayWidth() / 2, device.getDisplayHeight() / 5, 20);
             SystemClock.sleep(1000);
             device.swipe(device.getDisplayWidth() / 2, device.getDisplayHeight() / 5 * 3, device.getDisplayWidth() / 2, device.getDisplayHeight() / 5, 20);
@@ -244,7 +291,7 @@ public class Geekbench {
             device.swipe(device.getDisplayWidth() / 2, device.getDisplayHeight() / 5 * 3, device.getDisplayWidth() / 2, device.getDisplayHeight() / 5, 20);
             SystemClock.sleep(1000);
             myUntil.tookscreen(classname, key);
-        }else if (key.equals("多核结果")&&device.getDisplayHeight()>1900){
+        } else if (key.equals("多核结果") && device.getDisplayHeight() > 1900) {
             device.swipe(device.getDisplayWidth() / 2, device.getDisplayHeight() / 5 * 3, device.getDisplayWidth() / 2, device.getDisplayHeight() / 5, 20);
             SystemClock.sleep(1000);
             device.swipe(device.getDisplayWidth() / 2, device.getDisplayHeight() / 5 * 3, device.getDisplayWidth() / 2, device.getDisplayHeight() / 5, 20);
