@@ -1,6 +1,7 @@
 package com.spreadtrum.myapplication.mycase;
 
 import android.os.RemoteException;
+import android.os.SystemClock;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.uiautomator.By;
@@ -12,6 +13,7 @@ import android.support.test.uiautomator.UiSelector;
 import android.support.test.uiautomator.UiWatcher;
 import android.support.test.uiautomator.Until;
 import android.util.Log;
+import android.support.test.uiautomator.*;
 
 import com.spreadtrum.myapplication.help.MyUntil;
 import com.spreadtrum.myapplication.help.item;
@@ -85,7 +87,16 @@ public class AndroBench {
             yes.clickAndWait(Until.newWindow(), 1000);
         }
 */
+        UiObject2 run = device.wait(Until.findObject(By.res("com.andromeda.androbench2:id/btnStartingBenchmarking")), 1000);
+        if (run != null) {
+            int x = run.getVisibleBounds().centerX();
+            int y = run.getVisibleBounds().centerY();
+            Log.d("exsit", x + ":" + y);
+            run.clickAndWait(Until.newWindow(), 1200);
+            device.click(x + 1, y - 1);
+        }
         device.click(device.getDisplayWidth() / 2, device.getDisplayHeight() / 2);
+        device.click(device.getDisplayWidth() / 2, 467);
         Thread.sleep(2000);
         UiObject2 yes = device.wait(Until.findObject(By.text("Yes")), 1000);
         yes.clickAndWait(Until.newWindow(), 1000);

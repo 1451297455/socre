@@ -40,7 +40,7 @@ public class ludashi {
     private String appkill = "am force-stop " + packagename;
     private MyUntil myUntil = null;
     private UiDevice device = null;
-    int i = 600;
+    int i = 600, x = 0, y = 0;
     private String classname = getClass().getSimpleName();
     private item myitem = null;
     private ArrayList<item> list = null;
@@ -51,6 +51,8 @@ public class ludashi {
         device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         myUntil = new MyUntil();
         list = new ArrayList<>();
+        x = device.getDisplayWidth();
+        y = device.getDisplayHeight();
     }
 
     @Test
@@ -78,7 +80,15 @@ public class ludashi {
         device.click(device.getDisplayWidth() / 8, device.getDisplayHeight() / 200 * 199);
         Thread.sleep(2000);
 //        UiObject2 performance = device.wait(Until.findObject(By.res("com.ludashi6.benchmark:id/ll_performance_test_item")), 2000);
-        device.click(device.getDisplayWidth() / 3, device.getDisplayHeight() / 5*3);
+//        performance.clickAndWait(Until.newWindow(), 2300);
+        if (y == 1920) {
+            device.click(device.getDisplayWidth() / 3, device.getDisplayHeight() / 100 * 51);
+        } else if (y == 845) {
+            device.click(device.getDisplayWidth() / 3, device.getDisplayHeight() / 5 * 3);
+        } else if (y == 1280) {
+            device.click(device.getDisplayWidth() / 4, device.getDisplayHeight() / 8 * 5);
+        }
+
         Thread.sleep(1000);
         try {
             UiObject2 starttest = device.wait(Until.findObject(By.res("com.ludashi.benchmark:id/btn_rebench").text("重新评测")), 1000);
@@ -118,7 +128,13 @@ public class ludashi {
         Thread.sleep(1000);
 
         //体验评测
-        device.click(device.getDisplayWidth() / 3 * 2, device.getDisplayHeight() / 5*3);
+        if (y == 1920) {
+            device.click(device.getDisplayWidth() / 3 * 2, device.getDisplayHeight() / 100 * 51);
+        } else if (y == 845) {
+            device.click(device.getDisplayWidth() / 3 * 2, device.getDisplayHeight() / 5 * 3);
+        } else if (y == 1280) {
+            device.click(device.getDisplayWidth() / 4*3, device.getDisplayHeight() / 8 * 5);
+        }
         Thread.sleep(1000);
 
         UiObject2 retest = device.wait(Until.findObject(By.text("重新评测")), 1000);
