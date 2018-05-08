@@ -87,14 +87,14 @@ public class AndroBench {
             yes.clickAndWait(Until.newWindow(), 1000);
         }
 */
-        UiObject2 run = device.wait(Until.findObject(By.res("com.andromeda.androbench2:id/btnStartingBenchmarking")), 1000);
-        if (run != null) {
-            int x = run.getVisibleBounds().centerX();
-            int y = run.getVisibleBounds().centerY();
-            Log.d("exsit", x + ":" + y);
-            run.clickAndWait(Until.newWindow(), 1200);
-            device.click(x + 1, y - 1);
-        }
+//        UiObject2 run = device.wait(Until.findObject(By.res("com.andromeda.androbench2:id/btnStartingBenchmarking")), 1000);
+//        if (run != null) {
+//            int x = run.getVisibleBounds().centerX();
+//            int y = run.getVisibleBounds().centerY();
+//            Log.d("exsit", x + ":" + y);
+//            run.clickAndWait(Until.newWindow(), 1200);
+//            device.click(x + 1, y - 1);
+//        }
         device.click(device.getDisplayWidth() / 2, device.getDisplayHeight() / 2);
         device.click(device.getDisplayWidth() / 2, 467);
         Thread.sleep(2000);
@@ -108,6 +108,11 @@ public class AndroBench {
         result.clickAndWait(Until.newWindow(), 1000);
 
         UiScrollable scrollable = new UiScrollable(new UiSelector().resourceId("android:id/content"));
+        if (scrollable == null) {
+            scrollable = new UiScrollable(new UiSelector().resourceId("com.andromeda.androbench2:id/TestingView"));
+        }
+        device.swipe(device.getDisplayWidth() / 2, device.getDisplayHeight() / 5 * 4, device.getDisplayWidth() / 2, device.getDisplayHeight() / 5, 40);
+        SystemClock.sleep(1000);
         getdate(scrollable, "Sequential Read");
         getdate(scrollable, "Sequential Write");
         getdate(scrollable, "Random Read");
@@ -121,6 +126,9 @@ public class AndroBench {
 
     private void getdate(UiScrollable scrollable, String key) throws UiObjectNotFoundException {
         scrollable.scrollTextIntoView(key);
+        if (key.equals("SQLite Delete")) {
+            device.swipe(device.getDisplayWidth() / 2, device.getDisplayHeight() / 5 * 4, device.getDisplayWidth() / 2, device.getDisplayHeight() / 5, 40);
+        }
         UiObject2 name = device.wait(Until.findObject(By.text(key)), 1000);
         String value = name.getParent().getChildren().get(1).getText().split(" ")[0];
         myitem = new item(name.getText(), value);

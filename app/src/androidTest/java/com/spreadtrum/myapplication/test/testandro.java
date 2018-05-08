@@ -1,6 +1,8 @@
 package com.spreadtrum.myapplication.test;
 
 import android.content.Intent;
+import android.location.Location;
+import android.net.wifi.WifiManager;
 import android.provider.Settings;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
@@ -41,11 +43,10 @@ public class testandro {
         } else {
             System.out.println("false");
         }
-        Intent intent = new Intent();
     }
 
     @After
-    public void end() {
-
+    public void end() throws IOException {
+        device.executeShellCommand("svc wifi enable");
     }
 }

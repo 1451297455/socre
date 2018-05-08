@@ -55,7 +55,7 @@ public class Geekbench {
     }
 
     @Test
-    public void test() throws RemoteException, InterruptedException, UiObjectNotFoundException, IOException {
+    public void test() throws Exception {
         String sysgetprop = device.executeShellCommand("getprop");
         if (sysgetprop.contains("ro.com.google.gmsversion")) {
             assertTrue("运行失败", runGMStest());
@@ -66,12 +66,11 @@ public class Geekbench {
     }
 
     //NativeVersion
-    private boolean runNativeTest() throws RemoteException, InterruptedException, UiObjectNotFoundException {
+    public boolean runNativeTest() throws RemoteException, InterruptedException, UiObjectNotFoundException {
         try {
             myUntil.openScreen();
             myUntil.wifiOn();
             myUntil.entraps(appstart);
-
             device.registerWatcher("batterDialog", new UiWatcher() {
                 @Override
                 public boolean checkForCondition() {
@@ -88,6 +87,10 @@ public class Geekbench {
             if (accept != null) {
                 accept.clickAndWait(Until.newWindow(), 5000);
             }
+            myUntil.entraps(appkill);
+            SystemClock.sleep(2000);
+            myUntil.entraps(appstart);
+
             UiObject2 run = device.wait(Until.findObject(By.res("com.primatelabs.geekbench:id/runCpuBenchmarks")), 1000);
             if (run != null) {
                 run.clickAndWait(Until.newWindow(), 1000);
@@ -164,7 +167,7 @@ public class Geekbench {
     }
 
     //GMSVersion
-    private boolean runGMStest() throws RemoteException, InterruptedException, UiObjectNotFoundException {
+    private boolean runGMStest() throws Exception {
         try {
             myUntil.openScreen();
             myUntil.wifiOn();
@@ -185,10 +188,14 @@ public class Geekbench {
             UiObject2 accept = device.wait(Until.findObject(By.text("同意")), 5000);
             if (accept != null) {
                 accept.clickAndWait(Until.newWindow(), 5000);
+                SystemClock.sleep(2000);
             }
-            UiObject2 run = device.wait(Until.findObject(By.res("com.primatelabs.geekbench:id/runCpuBenchmarks")), 1000);
+            myUntil.entraps(appkill);
+            SystemClock.sleep(2000);
+            myUntil.entraps(appstart);
+            UiObject2 run = device.wait(Until.findObject(By.res("com.primatelabs.geekbench:id/runCpuBenchmarks")), 3000);
             if (run != null) {
-                run.clickAndWait(Until.newWindow(), 1000);
+                run.clickAndWait(Until.newWindow(), 3000);
             }
             UiObject2 netweak = null;
             UiObject2 result = device.wait(Until.findObject(By.text("跑分结果")), 1000);

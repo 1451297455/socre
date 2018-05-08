@@ -3,7 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/socre.iml" filepath="$PROJECT_DIR$/socre.iml" />
+      <module fileurl="file://$PROJECT_DIR$/socre_all.iml" filepath="$PROJECT_DIR$/socre_all.iml" />
     </modules>
   </component>
 </project>

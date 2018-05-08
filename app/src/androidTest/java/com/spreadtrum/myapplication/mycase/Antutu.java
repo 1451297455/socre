@@ -24,6 +24,7 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.regex.Pattern;
 
 import android.os.Environment;
 
@@ -75,11 +76,15 @@ public class Antutu {
         if (device.hasWatcherTriggered("batterDialog")) {
             device.resetWatcherTriggers();
         }
-        UiObject2 start = device.wait(Until.findObject(By.res("com.antutu.ABenchMark:id/start_test_region")), 1000);
-        start.clickAndWait(Until.newWindow(),2000);
-//        device.executeShellCommand("am start -S -W -n com.antutu.ABenchMark/com.antutu.ABenchMark.ABenchMarkStart");
-//        device.executeShellCommand("am start -S -W -n com.antutu.ABenchMark/com.antutu.ABenchMark.ABenchMarkStart -e 74Sd42l35nH e57b6eb9906e27062fc7fcfcc820b957a5c33b649");
-        UiObject2 result = null;
+        try {
+            UiObject2 start = device.wait(Until.findObject(By.res(Pattern.compile("com.antutu.ABenchMark:id/start_test_region|com.antutu.ABenchMark:id/start_test_text"))), 1000);
+            start.clickAndWait(Until.newWindow(),2000);
+        }catch (Exception e){
+            device.executeShellCommand("am start -S -W -n com.antutu.ABenchMark/com.antutu.ABenchMark.ABenchMarkStart");
+            device.executeShellCommand("am start -S -W -n com.antutu.ABenchMark/com.antutu.ABenchMark.ABenchMarkStart -e 74Sd42l35nH e57b6eb9906e27062fc7fcfcc820b957a5c33b649");
+        }
+
+      UiObject2 result = null;
         while (result == null && i-- > 1) {
             Thread.sleep(1000);
             result = device.wait(Until.findObject(By.res("com.antutu.ABenchMark:id/title_text").text("测试详情")), 1000);

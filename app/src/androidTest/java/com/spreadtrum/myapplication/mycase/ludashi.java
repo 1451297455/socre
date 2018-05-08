@@ -77,9 +77,17 @@ public class ludashi {
         if (close != null) {
             close.clickAndWait(Until.newWindow(), 2000);
         }
+        myUntil.entraps(appkill);
+        myUntil.entraps(appstart);
+
+        UiObject2 yes = device.wait(Until.findObject(By.text("下次再说")), 1000);
+        if (yes != null) {
+            yes.clickAndWait(Until.newWindow(), 2000);
+            SystemClock.sleep(2000);
+        }
         device.click(device.getDisplayWidth() / 8, device.getDisplayHeight() / 200 * 199);
-        Thread.sleep(2000);
-//        UiObject2 performance = device.wait(Until.findObject(By.res("com.ludashi6.benchmark:id/ll_performance_test_item")), 2000);
+        SystemClock.sleep(2000);
+//        UiObject2 performance = device.wait(Until.findObject(By.res("com.ludashi.benchmark:id/ll_performance_test_item")), 2000);
 //        performance.clickAndWait(Until.newWindow(), 2300);
         if (y == 1920) {
             device.click(device.getDisplayWidth() / 3, device.getDisplayHeight() / 100 * 51);
@@ -126,14 +134,15 @@ public class ludashi {
         getdata("数据库", scrollable);
         device.pressBack();
         Thread.sleep(1000);
-
         //体验评测
+//        UiObject2 expierence = device.wait(Until.findObject(By.res("com.ludashi.benchmark:id/ll_expierence_test_item")), 2000);
+//        expierence.clickAndWait(Until.newWindow(), 2000);
         if (y == 1920) {
             device.click(device.getDisplayWidth() / 3 * 2, device.getDisplayHeight() / 100 * 51);
         } else if (y == 845) {
             device.click(device.getDisplayWidth() / 3 * 2, device.getDisplayHeight() / 5 * 3);
         } else if (y == 1280) {
-            device.click(device.getDisplayWidth() / 4*3, device.getDisplayHeight() / 8 * 5);
+            device.click(device.getDisplayWidth() / 4 * 3, device.getDisplayHeight() / 8 * 5);
         }
         Thread.sleep(1000);
 

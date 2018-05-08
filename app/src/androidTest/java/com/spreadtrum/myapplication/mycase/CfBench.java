@@ -1,6 +1,7 @@
 package com.spreadtrum.myapplication.mycase;
 
 import android.os.RemoteException;
+import android.os.SystemClock;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.uiautomator.By;
@@ -76,9 +77,16 @@ public class CfBench {
         Full_Benchmark.clickAndWait(Until.newWindow(), 1000);
         UiObject2 progress = device.wait(Until.findObject(By.res("android:id/progress")), 1000);
         while (progress != null && i-- > 0) {
-            Thread.sleep(3000);
-            progress = device.wait(Until.findObject(By.res("android:id/progress")), 1000);
+            try {
+                SystemClock.sleep(3000);
+                progress = device.wait(Until.findObject(By.res("android:id/progress")), 3000);
+            } catch (Exception e) {
+                progress = null;
+            }
         }
+        device.swipe(device.getDisplayWidth() / 2, device.getDisplayHeight() / 5 * 4, device.getDisplayWidth() / 2, device.getDisplayHeight() / 5, 30);
+        SystemClock.sleep(1000);
+        scrollable = new UiScrollable(new UiSelector().resourceId("android:id/list"));
         getdata(scrollable, "Mhz");
         getdata(scrollable, "Native MIPS");
         getdata(scrollable, "Java MIPS");

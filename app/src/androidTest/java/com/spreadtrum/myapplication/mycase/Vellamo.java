@@ -76,6 +76,9 @@ public class Vellamo {
         if (accept != null) {
             accept.clickAndWait(Until.newWindow(), 1000);
         }
+        myUntil.entraps(appkill);
+        SystemClock.sleep(2000);
+        myUntil.entraps(appstart);
         UiScrollable scrollable = new UiScrollable(new UiSelector().resourceId("com.quicinc.vellamo:id/cards_container"));
         scrollable.scrollTextIntoView("浏览器");
         UiObject2 broswer = device.wait(Until.findObject(By.text("浏览器")), 1000);

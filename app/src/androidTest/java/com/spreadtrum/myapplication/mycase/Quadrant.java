@@ -1,6 +1,7 @@
 package com.spreadtrum.myapplication.mycase;
 
 import android.os.RemoteException;
+import android.os.SystemClock;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.uiautomator.By;
@@ -80,9 +81,13 @@ public class Quadrant {
                     return true;
                 }
                 return false;
+
             }
         });
-        UiObject2 run = device.wait(Until.findObject(By.text("Run full benchmark")), 1000);
+        myUntil.entraps(appkill);
+        SystemClock.sleep(2000);
+        myUntil.entraps(appstart);
+        UiObject2 run = device.wait(Until.findObject(By.text("Run full benchmark")), 3000);
         run.clickAndWait(Until.newWindow(), 1000);
         UiObject2 result = device.wait(Until.findObject(By.res("com.aurorasoftworks.quadrant.ui.professional:id/chart")), 1000);
         while (result == null && i-- > 0) {

@@ -1,6 +1,7 @@
 package com.spreadtrum.myapplication.mycase;
 
 import android.os.RemoteException;
+import android.os.SystemClock;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.uiautomator.By;
@@ -70,6 +71,7 @@ public class BenchmarkPI {
 
         UiObject2 run = device.wait(Until.findObject(By.res("gr.androiddev.BenchmarkPi:id/Button01")), 1000);
         run.clickAndWait(Until.newWindow(), 1000);
+        SystemClock.sleep(3000);
         UiObject2 message = device.wait(Until.findObject(By.res("android:id/message")), 1000);
         String[] pistr = message.getText().split(" ");
         String pi = pistr[4];
